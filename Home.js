@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {StatusBar, Button, SectionList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {datasource} from './Data';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const styles = StyleSheet.create({
     textStyle: {
@@ -21,6 +22,19 @@ const styles = StyleSheet.create({
 });
 
 const Home = ({navigation}) => {
+    const [mydata, setMydata] = useState([]);
+
+    const getData = async () => {
+        let datastr = await AsyncStorage.getItem('alphadata');
+        if (datastr != null) {
+            jsondata = JSON.parse(datastr);
+            setMydata(jsondata)
+        } else {
+            setMydata(datasource);
+        }
+    }
+
+    getData()
 
     const renderItem = ({item, index, section}) => {
         return (
@@ -45,13 +59,15 @@ const Home = ({navigation}) => {
     return (
         <View>
             <StatusBar/>
-            <Button title='Add Letter' onPress={() => {
-                navigation.navigate("Add")
-            }}/>
-            <SectionList sections={datasource}
+            <Button title='Add Letter'
+                    onPress={() => {
+                        let datastr = JSON.stringify(mydata);
+                        navigation.navigate("Add", {datastring:datastr})
+                    }}/>
+            <SectionList sections={mydata}
                          renderItem={renderItem}
-                         renderSectionHeader={sectionHeader
-                         }/>
+                         renderSectionHeader={sectionHeader}
+            />
         </View>
     );
 };

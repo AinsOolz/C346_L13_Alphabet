@@ -1,9 +1,27 @@
 import React, {useState} from 'react';
 import {Alert, View, Button, Text, TextInput} from 'react-native';
 import {datasource} from './Data';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Edit = ({navigation, route}) => {
     const [letter, setLetter] = useState(route.params.key);
+    const [mydata, setMydata] = useState([]);
+
+    const getData = async () => {
+        let datastr = await AsyncStorage.getItem('alphadata');
+        if (datastr != null) {
+            jsondata = JSON.parse(datastr);
+            setMydata(jsondata)
+        }
+    }
+
+    const setData = async(value) => {
+        AsyncStorage.setItem("alphadata", value)
+        navigation.navigate("Home")
+    }
+
+    getData();
+
     return (
         <View>
             <Text>Letter:</Text>
